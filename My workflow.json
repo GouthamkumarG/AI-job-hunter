@@ -1,0 +1,482 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "eaadedd2-2415-445b-8596-c84d05781513",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "hKByXkMQaC5Qt9UMN",
+          "mode": "list",
+          "cachedResultName": "Linkedin Jobs Scraper (curious_coder/linkedin-jobs-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/hKByXkMQaC5Qt9UMN/input"
+        },
+        "customBody": "{\n  \"urls\": [\n    \"https://www.linkedin.com/jobs/search/?keywords=AI+Automation+Engineer&location=United+Kingdom&f_TPR=r86400&f_E=1%2C2\",\n    \"https://www.linkedin.com/jobs/search/?keywords=AI+Engineer+LLM&location=United+Kingdom&f_TPR=r86400&f_E=1%2C2\",\n    \"https://www.linkedin.com/jobs/search/?keywords=NLP+Engineer+Junior&location=United+Kingdom&f_TPR=r86400&f_E=1%2C2\",\n    \"https://www.linkedin.com/jobs/search/?keywords=Full+Stack+Developer+Node+TypeScript&location=United+Kingdom&f_TPR=r86400&f_E=1%2C2\",\n    \"https://www.linkedin.com/jobs/search/?keywords=Machine+Learning+Engineer+Junior&location=United+Kingdom&f_TPR=r86400&f_E=1%2C2\"\n  ],\n  \"maxResults\": 100,\n  \"scrapeCompany\": false\n}",
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cc614a33-cced-4a01-9553-ff83b3a8b362",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "yyI6wG0MolcUGgcC",
+          "name": "Apify OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = $input.all();\n\nconst jobList = jobs.map((item, i) => {\n  const j = item.json;\n\n  let applyUrl = '';\n  let urlNote = '';\n\n  if (j.applyUrl && j.applyUrl !== 'undefined') {\n    applyUrl = j.applyUrl;\n    urlNote = 'Direct apply link available';\n  } else if (j.link) {\n    applyUrl = j.link;\n    urlNote = 'LinkedIn listing link (click Apply on LinkedIn)';\n  } else {\n    applyUrl = `https://www.linkedin.com/jobs/view/${j.id}`;\n    urlNote = 'No direct link - search by job ID on LinkedIn';\n  }\n\n  return `\nJOB ${i+1}:\nTitle: ${j.title || j.standardizedTitle || 'N/A'}\nCompany: ${j.companyName || 'N/A'}\nLocation: ${j.location || 'N/A'}\nSalary: ${j.salary || 'Not stated'}\nSeniority: ${j.seniorityLevel || 'Not stated'}\nEmployment Type: ${j.employmentType || 'Not stated'}\nPosted: ${j.postedAt || 'N/A'}\nDescription: ${(j.descriptionText || '').substring(0, 2000)}\nApply URL: ${applyUrl}\nURL Note: ${urlNote}\n`.trim();\n}).join('\\n---\\n');\n\nconst prompt = `You are a brutally honest AI recruitment strategist and ATS expert operating in the UK tech job market. You think like a hiring manager, a senior recruiter, and an ATS system simultaneously.\n\nYour mission: Protect this candidate from wasting time on bad applications. Only surface jobs where he has a GENUINE shot at an interview. Be ruthless in filtering. Be specific in analysis. Be actionable in advice.\n\n===== CANDIDATE RESUME =====\n\nGOUTHAM GORTHI\nLocation: Dundee, Scotland, UK\nEmail: gouthamchowdary00@gmail.com\nLinkedIn: linkedin.com/in/gouthamchowdary\nGitHub: github.com/GouthamkumarG\n\nPROFILE:\nAI Engineer and Full Stack Developer with an MSc in Computer Science (University of Dundee), specialising in LLM integration, NLP pipelines, and agentic AI automation. Brings production-grade full-stack delivery experience, architecting and shipping three interconnected real-world applications for a live commercial client as sole developer. Currently building AI automation pipelines with N8N, OpenAI, and LLM prompt chains. Writes clean, testable, maintainable code and works effectively in Agile teams. Available immediately for AI Engineer, AI Automation Engineer, Junior ML Engineer, and Full Stack Developer roles across the UK.\n\nTECHNICAL SKILLS:\n- AI & ML: Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), Prompt Engineering, Agentic AI Pipelines, Natural Language Processing (NLP), spaCy, Computer Vision, Model Training & Evaluation, Data Annotation\n- AI Automation: N8N, Agentic Workflow Design, OpenAI API, Webhook Integrations, REST API Design, BullMQ, Redis, Notion API, WhatsApp Business API, Firebase FCM\n- Full Stack: Node.js, TypeScript, Python, React, React Native, Next.js, FastAPI, PostgreSQL, Prisma ORM, Firebase, Tailwind CSS, Expo EAS\n- DevOps: Git, GitHub, Docker, Nginx, PM2, Vercel, Hetzner VPS, CI/CD, Agile, Scrum, Unit Testing, Integration Testing\n- Integrations: Razorpay HMAC webhook, Firebase FCM, Notion API, WhatsApp API, PlantUML, OpenAI API\n\nEXPERIENCE:\n1. AI & Full Stack Engineer (Freelance) - Jan 2026 to Present - Remote UK\n- Sole developer on production-grade laundry services platform for live commercial client\n- Built React Native customer app with OTP auth, 6-step order wizard, Razorpay payments, loyalty points, WhatsApp notifications\n- Architected Node.js/TypeScript backend with JWT auth, RBAC, OTP rate limiting, Razorpay HMAC webhook verification\n- Built async notification pipeline using BullMQ and Redis processing FCM push and SMS events independently\n- Developed Next.js admin dashboard for real-time order management and business analytics\n- Full VPS deployment on Hetzner with Nginx, PM2, PostgreSQL via Prisma ORM, zero-downtime releases\n- Tech: Node.js, TypeScript, PostgreSQL, Prisma ORM, React Native, Next.js, Redis, BullMQ, Firebase FCM, Razorpay, Nginx, PM2, Docker\n\n2. AI/ML Data Annotator Associate - Sep 2023 to Aug 2024 - Intellabel, Bengaluru India\n- Labelled large-scale image, text, audio datasets across ML training pipelines with over 98% accuracy\n- Gained end-to-end ML pipeline knowledge across data preprocessing, model evaluation, quality assurance\n- Collaborated with ML engineers to identify systematic labelling errors reducing annotation rework\n\nPROJECTS:\n1. CraftUML - AI-Powered UML Diagram Generator (MSc Final Year Project, University of Dundee)\n- Achieved 88% overall NLP accuracy in under 3 seconds, 100% accuracy on Use Case diagrams\n- Designed spaCy NLP pipeline extracting entities, actions, relationships from free text\n- Maps to Use Case, Sequence, Class diagram structures via PlantUML rendering\n- 3-tier RESTful architecture with NLP processing, diagram generation, React frontend\n- Tech: Python, FastAPI, spaCy, PlantUML, React, REST APIs, NLP\n\n2. AI Meeting Notes Processor - Agentic LLM Automation Pipeline (Personal Project, Apr 2026 to Present)\n- End-to-end agentic AI pipeline ingesting raw meeting transcripts\n- Extracts action items, decisions, owners via LLM prompt chains\n- Auto-generates tasks in Notion, dispatches formatted summaries to attendees with zero manual intervention\n- Demonstrates RAG-style information extraction, structured LLM output parsing, multi-tool orchestration\n- Tech: N8N, OpenAI API, Notion API, Prompt Engineering, Webhook Integrations, Agentic Pipelines\n\nEDUCATION:\n- MSc Computer Science - University of Dundee, Scotland UK - Sep 2024 to Sep 2025\n- BEng Electrical Electronics Communications Engineering - Presidency University Bangalore India - Sep 2019 to Jun 2023\n\nPREFERENCES:\n- Open to London, Edinburgh, Manchester, Glasgow, Birmingham, or fully Remote UK\n- Available for immediate start\n- Interests: Agentic AI systems, LLM application development, open-source NLP tooling\n\n===== END OF RESUME =====\n\n===== JOBS TO ANALYSE =====\n${jobList}\n===== END OF JOBS =====\n\n===== STEP 1 — HARD FILTERING =====\n\nIMMEDIATELY DISQUALIFY any job where:\n- Title contains: Senior, Lead, Principal, Staff, Head, Director, Manager, Architect, VP, C-level, Executive\n- Description requires 3+ years professional experience\n- seniorityLevel is: Senior, Director, Executive, Mid-Senior\n- Role requires team or people management\n- Tech stack is completely outside Goutham skills (pure Java enterprise, .NET only, iOS Swift only, Ruby only)\n- The job description is vague, has no real requirements, or is clearly recruiter bait\n- match_percent would be below 70\n\nIf fewer than 5 jobs pass — return only passing jobs. Never include bad matches to fill spots.\n\n===== STEP 2 — DEEP ANALYSIS =====\n\nMATCH SCORING — calculate match_percent:\n- 40% weight: technical skill overlap — count exactly how many required skills Goutham has\n- 25% weight: seniority fit — is this genuinely entry or junior level\n- 20% weight: project relevance — do his projects directly prove he can do this job\n- 15% weight: domain alignment — AI, ML, Full Stack, Automation fit\n- Be BRUTALLY honest. 90%+ means he has almost every skill. Do not inflate scores.\n\nINTERVIEW PROBABILITY — calculate interview_probability:\n- Based on skill match, seniority fit, competition level, project relevance\n- Factor in: is this a niche role with less competition or generic role with high competition\n- Factor in: does his MSc add credibility for this specific role\n- 70%+ means he genuinely has a strong shot. Do not inflate.\n\nATS SCORE — calculate ats_score:\n- Scan the job description for specific keywords, technologies, and phrases\n- Check exactly which of those keywords appear in Goutham resume\n- ats_score = keywords found in resume divided by total keywords in JD multiplied by 100\n- Be precise. List the specific keywords missing.\n\n===== STEP 3 — KEYWORD GAP ANALYSIS =====\n\nFor ats_keyword_gaps:\n- List EVERY specific keyword or technology or phrase in the job description that does NOT appear in Goutham resume\n- Be specific: not cloud skills but AWS Lambda S3 CloudFormation\n- Not testing but Jest unit testing Cypress E2E\n- These are the exact words he needs to add to his resume before applying\n\n===== STEP 4 — RESUME IMPROVEMENT SUGGESTIONS =====\n\nFor resume_improvements:\n- Give 2-3 SPECIFIC bullet point changes he should make to his resume FOR THIS SPECIFIC JOB\n- Reference actual lines from his resume that should be reworded\n- Keep suggestions concise and avoid using double quotes inside the text\n- These should be actionable specific suggestions\n\n===== STEP 5 — OUTPUT =====\n\nReturn a JSON array. For each qualifying job return exactly these fields:\n- rank (1 to 10, 1 = best realistic match)\n- title\n- company\n- location\n- salary\n- url\n- url_note\n- apply_method\n- match_percent (0-100, honest)\n- interview_probability (0-100, honest)\n- ats_score (0-100, keyword density match)\n- ats_keyword_gaps (specific missing keywords as a string, no double quotes inside)\n- why_good_match (3-4 sentences, no double quotes inside)\n- missing_skills (specific honest list, no double quotes inside)\n- recruiter_concern (one honest sentence, no double quotes inside)\n- resume_improvements (2-3 specific suggestions, no double quotes inside)\n- cover_letter_needed (YES or NO)\n- cover_letter_reason (one sentence, no double quotes inside)\n- priority (APPLY NOW or HIGH PRIORITY or GOOD BACKUP)\n- one_action (one specific action, no double quotes inside)\n\nCRITICAL JSON RULES:\n- Start with [\n- End with ]\n- Contain ONLY the JSON array\n- Have NO backticks, NO markdown, NO code blocks\n- Use NO double quotes inside any field values — use plain text only\n- Use NO apostrophes or contractions — write does not instead of does not with apostrophe\n- Use NO special characters inside field values\n- Be valid parseable JSON`;\n\nreturn [{ json: { prompt: prompt } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ac6f672e-fbda-4b26-b044-1849e5326591",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.prompt }}"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 8000,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "9e918050-d6d1-4c0a-b71a-68e47c53b4d1",
+      "name": "Message a model",
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Simplify Output is ON so text is directly in input.text\nconst rawText = input.content[0].text;\n\nconst start = rawText.indexOf('[');\nconst end = rawText.lastIndexOf(']') + 1;\n\nconst cleanText = rawText\n  .substring(start, end)\n  .replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, ' ')\n  .replace(/\\n/g, ' ')\n  .replace(/\\r/g, ' ')\n  .replace(/\\t/g, ' ');\n\nlet jobs;\ntry {\n  jobs = JSON.parse(cleanText);\n} catch(e) {\n  const fixed = cleanText.replace(/([{,]\\s*\"[^\"]+\"\\s*:\\s*\")([^\"]*?)(\")/g, (match, p1, p2, p3) => {\n    return p1 + p2.replace(/\"/g, '\\\\\"') + p3;\n  });\n  jobs = JSON.parse(fixed);\n}\n\n// FIX 3: Sanitize function to prevent #ERROR in sheets\nconst clean = (val) => {\n  if (val === null || val === undefined) return '';\n  return String(val)\n    .replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, ' ')\n    .replace(/[^\\x20-\\x7E]/g, ' ')\n    .trim();\n};\n\nconst today = new Date().toLocaleDateString('en-GB', {\n  day: '2-digit', month: 'short', year: 'numeric'\n});\n\nconst priorityColors = {\n  'APPLY NOW': '#16a34a',\n  'HIGH PRIORITY': '#2563eb',\n  'GOOD BACKUP': '#d97706'\n};\n\nconst rows = jobs.map(job => {\n  const color = priorityColors[job.priority] || '#6b7280';\n  const applyButton = job.url\n    ? `<a href=\"${job.url}\" style=\"background:#1a1a2e;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:bold;\">APPLY</a>`\n    : `<span style=\"color:#dc2626;font-size:11px;font-weight:bold;\">Search on LinkedIn</span>`;\n  const methodColor = job.apply_method === 'OffsiteApply' ? '#16a34a' : '#2563eb';\n  const methodLabel = job.apply_method === 'OffsiteApply' ? 'Direct' : 'EasyApply';\n  return `\n  <tr style=\"border-bottom:1px solid #e5e7eb;\">\n    <td style=\"padding:12px 8px;font-weight:bold;\">#${job.rank}</td>\n    <td style=\"padding:12px 8px;\"><span style=\"background:${color};color:white;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;\">${job.priority}</span></td>\n    <td style=\"padding:12px 8px;\"><strong>${clean(job.title)}</strong><br><span style=\"color:#6b7280;font-size:13px;\">${clean(job.company)}</span></td>\n    <td style=\"padding:12px 8px;font-size:13px;\">${clean(job.location)}</td>\n    <td style=\"padding:12px 8px;font-size:13px;\">${clean(job.salary)}</td>\n    <td style=\"padding:12px 8px;text-align:center;\"><div style=\"font-size:22px;font-weight:bold;color:#16a34a;\">${job.match_percent}%</div><div style=\"font-size:11px;color:#6b7280;\">Match</div></td>\n    <td style=\"padding:12px 8px;text-align:center;\"><div style=\"font-size:22px;font-weight:bold;color:#2563eb;\">${job.interview_probability}%</div><div style=\"font-size:11px;color:#6b7280;\">Interview</div></td>\n    <td style=\"padding:12px 8px;text-align:center;\"><div style=\"font-size:22px;font-weight:bold;color:#7c3aed;\">${job.ats_score || 'N/A'}%</div><div style=\"font-size:11px;color:#6b7280;\">ATS</div></td>\n    <td style=\"padding:12px 8px;font-size:12px;max-width:200px;\">${clean(job.why_good_match)}</td>\n    <td style=\"padding:12px 8px;font-size:12px;color:#dc2626;max-width:200px;\">${clean(job.missing_skills)}</td>\n    <td style=\"padding:12px 8px;font-size:12px;color:#d97706;max-width:200px;\">${clean(job.ats_keyword_gaps) || 'None'}</td>\n    <td style=\"padding:12px 8px;font-size:12px;max-width:250px;\">${clean(job.resume_improvements) || 'N/A'}</td>\n    <td style=\"padding:12px 8px;font-size:12px;color:#b45309;max-width:200px;\">${clean(job.recruiter_concern) || 'N/A'}</td>\n    <td style=\"padding:12px 8px;text-align:center;font-size:13px;\">${job.cover_letter_needed}</td>\n    <td style=\"padding:12px 8px;font-size:12px;max-width:150px;\">${clean(job.cover_letter_reason) || 'N/A'}</td>\n    <td style=\"padding:12px 8px;font-size:12px;\">${clean(job.one_action)}</td>\n    <td style=\"padding:12px 8px;text-align:center;\"><span style=\"background:${methodColor};color:white;padding:3px 8px;border-radius:12px;font-size:11px;\">${methodLabel}</span><br><div style=\"font-size:11px;color:#6b7280;margin-top:4px;\">${clean(job.url_note) || ''}</div></td>\n    <td style=\"padding:12px 8px;\">${applyButton}</td>\n  </tr>`;\n}).join('');\n\nconst applyNowCount = jobs.filter(j => j.priority === 'APPLY NOW').length;\nconst highCount = jobs.filter(j => j.priority === 'HIGH PRIORITY').length;\nconst directLinks = jobs.filter(j => j.apply_method === 'OffsiteApply').length;\n\nconst html = `<!DOCTYPE html>\n<html>\n<body style=\"margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;\">\n<div style=\"max-width:1600px;margin:0 auto;padding:20px;\">\n  <div style=\"background:#1a1a2e;color:white;padding:30px;border-radius:12px;text-align:center;margin-bottom:20px;\">\n    <h1 style=\"margin:0;font-size:28px;\">UK Job Hunter Report</h1>\n    <p style=\"margin:8px 0 0;color:#a0aec0;\">${today} — AI-curated matches for Goutham</p>\n  </div>\n  <div style=\"display:flex;gap:15px;margin-bottom:20px;\">\n    <div style=\"flex:1;background:#dcfce7;border-radius:10px;padding:20px;text-align:center;\">\n      <div style=\"font-size:36px;font-weight:bold;color:#16a34a;\">${applyNowCount}</div>\n      <div style=\"color:#166534;font-weight:bold;\">APPLY NOW</div>\n    </div>\n    <div style=\"flex:1;background:#dbeafe;border-radius:10px;padding:20px;text-align:center;\">\n      <div style=\"font-size:36px;font-weight:bold;color:#2563eb;\">${highCount}</div>\n      <div style=\"color:#1e40af;font-weight:bold;\">HIGH PRIORITY</div>\n    </div>\n    <div style=\"flex:1;background:#fef3c7;border-radius:10px;padding:20px;text-align:center;\">\n      <div style=\"font-size:36px;font-weight:bold;color:#d97706;\">${directLinks}</div>\n      <div style=\"color:#92400e;font-weight:bold;\">DIRECT LINKS</div>\n    </div>\n    <div style=\"flex:1;background:#f3e8ff;border-radius:10px;padding:20px;text-align:center;\">\n      <div style=\"font-size:36px;font-weight:bold;color:#7c3aed;\">${jobs.length}</div>\n      <div style=\"color:#5b21b6;font-weight:bold;\">TOTAL MATCHES</div>\n    </div>\n  </div>\n  <div style=\"background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);\">\n    <div style=\"padding:20px;border-bottom:1px solid #e5e7eb;\">\n      <h2 style=\"margin:0;color:#1a1a2e;\">Your Top Jobs Today</h2>\n      <p style=\"margin:5px 0 0;color:#6b7280;\">Ranked by AI — brutally honest match scores and ATS analysis</p>\n    </div>\n    <div style=\"overflow-x:auto;\">\n      <table style=\"width:100%;border-collapse:collapse;\">\n        <thead>\n          <tr style=\"background:#f9fafb;\">\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">#</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">PRIORITY</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">JOB</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">LOCATION</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">SALARY</th>\n            <th style=\"padding:12px 8px;text-align:center;font-size:12px;\">MATCH</th>\n            <th style=\"padding:12px 8px;text-align:center;font-size:12px;\">INTERVIEW</th>\n            <th style=\"padding:12px 8px;text-align:center;font-size:12px;\">ATS</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">WHY APPLY</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">MISSING SKILLS</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">ATS GAPS</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">RESUME FIXES</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">RECRUITER CONCERN</th>\n            <th style=\"padding:12px 8px;text-align:center;font-size:12px;\">COVER LETTER</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">COVER LETTER REASON</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">ACTION</th>\n            <th style=\"padding:12px 8px;text-align:center;font-size:12px;\">LINK TYPE</th>\n            <th style=\"padding:12px 8px;text-align:left;font-size:12px;\">APPLY</th>\n          </tr>\n        </thead>\n        <tbody>${rows}</tbody>\n      </table>\n    </div>\n  </div>\n  <div style=\"text-align:center;padding:25px;color:#6b7280;font-size:13px;\">\n    <p>Generated automatically by your AI Job Hunter</p>\n    <p style=\"color:#dc2626;font-weight:bold;\">Apply to at least 5 jobs today!</p>\n  </div>\n</div>\n</body>\n</html>`;\n\n// FIX 2: Separator row - no = sign at start to avoid Google Sheets formula error\nconst separatorRow = {\n  json: {\n    date: `--- ${today} ---`,\n    rank: '',\n    priority: '--- NEW DAY ---',\n    title: '',\n    company: '',\n    location: '',\n    salary: '',\n    match_percent: '',\n    interview_probability: '',\n    ats_score: '',\n    ats_keyword_gaps: '',\n    why_good_match: '',\n    missing_skills: '',\n    recruiter_concern: '',\n    resume_improvements: '',\n    cover_letter_needed: '',\n    cover_letter_reason: '',\n    one_action: '',\n    apply_method: '',\n    url_note: '',\n    url: '',\n    html: '',\n    emailDate: today\n  }\n};\n\nreturn [separatorRow, ...jobs.map(job => ({\n  json: {\n    date: today,\n    rank: job.rank,\n    priority: clean(job.priority),\n    title: clean(job.title),\n    company: clean(job.company),\n    location: clean(job.location),\n    salary: clean(job.salary),\n    match_percent: job.match_percent,\n    interview_probability: job.interview_probability,\n    ats_score: job.ats_score,\n    ats_keyword_gaps: clean(job.ats_keyword_gaps),\n    why_good_match: clean(job.why_good_match),\n    missing_skills: clean(job.missing_skills),\n    recruiter_concern: clean(job.recruiter_concern),\n    resume_improvements: clean(job.resume_improvements),\n    cover_letter_needed: clean(job.cover_letter_needed),\n    cover_letter_reason: clean(job.cover_letter_reason),\n    one_action: clean(job.one_action),\n    apply_method: clean(job.apply_method),\n    url_note: clean(job.url_note),\n    url: clean(job.url),\n    html: html,\n    emailDate: today\n  }\n}))];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "bf3dc2c7-af98-4b98-a850-2d77181e2d4c",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "sendTo": "gouthamchowdary00@gmail.com",
+        "subject": "=Your Daily UK Job Report - {{ $now.format('DD MMM YYYY') }}",
+        "emailType": "text",
+        "message": "=Your daily UK Job Hunter report is ready!  View your top jobs here: https://docs.google.com/spreadsheets/d/18QnD9hvsVRDQuwx2Nz3mx7r-TdzpLRdEP3P1tT82Muc/edit  Date: {{ $json.date }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "0b088efb-7377-44db-a414-5466d0dac6d8",
+      "name": "Send a message",
+      "webhookId": "774d156e-9472-4704-9d74-be96c127353e",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gKXQC03hV8RxotnP",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18QnD9hvsVRDQuwx2Nz3mx7r-TdzpLRdEP3P1tT82Muc",
+          "mode": "list",
+          "cachedResultName": "UK Job Hunting",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18QnD9hvsVRDQuwx2Nz3mx7r-TdzpLRdEP3P1tT82Muc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18QnD9hvsVRDQuwx2Nz3mx7r-TdzpLRdEP3P1tT82Muc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.date }}",
+            "Rank": "={{ $json.rank }}",
+            "Priority": "={{ $json.priority }}",
+            "Title": "={{ $json.title }}",
+            "Company ": "={{ $json.company }}",
+            "Location": "={{ $json.location }}",
+            "Salary": "={{ $json.salary }}",
+            "Match %": "={{ $json.match_percent }}",
+            "Interview%": "={{ $json.interview_probability }}",
+            "Why Good Match": "={{ $json.why_good_match }}",
+            "Missing Skills": "={{ $json.missing_skills }}",
+            "Cover Letter": "={{ $json.cover_letter_needed }}",
+            "One Action": "={{ $json.one_action }}",
+            "Apply Method": "={{ $json.apply_method }}",
+            "URL Note": "={{ $json.url_note }}",
+            "Apply URL": "={{ $json.url }}",
+            "ATS Score ": "={{ $json.ats_score }}",
+            "ATS Keyword Gaps": "={{ $json.ats_keyword_gaps }}",
+            "Resume Improvements": "={{ $json.resume_improvements }}",
+            "Recruiter Concern ": "={{ $json.recruiter_concern }}",
+            "Cover Letter Reason": "={{ $json.cover_letter_reason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rank",
+              "displayName": "Rank",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company ",
+              "displayName": "Company ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Salary",
+              "displayName": "Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Match %",
+              "displayName": "Match %",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Interview%",
+              "displayName": "Interview%",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Why Good Match",
+              "displayName": "Why Good Match",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Missing Skills",
+              "displayName": "Missing Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cover Letter",
+              "displayName": "Cover Letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "One Action",
+              "displayName": "One Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apply Method",
+              "displayName": "Apply Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL Note",
+              "displayName": "URL Note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apply URL",
+              "displayName": "Apply URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ATS Score ",
+              "displayName": "ATS Score ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ATS Keyword Gaps",
+              "displayName": "ATS Keyword Gaps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resume Improvements",
+              "displayName": "Resume Improvements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Recruiter Concern ",
+              "displayName": "Recruiter Concern ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cover Letter Reason",
+              "displayName": "Cover Letter Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "3efdc9d3-d4db-4439-a7b8-f716b013456a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GyWoPYGXd0LQ5lCA",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4e9cb143-dd7d-4ef8-8cb8-91174aca432f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "932da6ed5dda4a3954163e31fb0c2daaaaa53947c1e110aa8ad79dd41aec8d4d"
+  },
+  "id": "2GkSvScAdZ9lFZnE",
+  "tags": []
+}
