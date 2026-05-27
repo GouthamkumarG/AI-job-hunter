@@ -146,6 +146,7 @@ full ranked table with every job analysis and one-click apply buttons.
 
 ## Tech Stack
 
+```javascript
 const pipeline = {
   orchestration : "N8N Cloud",
   scraping      : "Apify LinkedIn Jobs Scraper",
@@ -155,8 +156,7 @@ const pipeline = {
   delivery      : "Gmail via N8N",
   hosting       : "N8N Cloud (scheduled)",
 }
-
----
+```
 
 ## Repository Structure
 
