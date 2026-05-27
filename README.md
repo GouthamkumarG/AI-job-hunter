@@ -149,7 +149,7 @@ full ranked table with every job analysis and one-click apply buttons.
 ```javascript
 const pipeline = {
   orchestration : "N8N Cloud",
-  scraping      : "Apify — LinkedIn Jobs Scraper",
+  scraping      : "Apify LinkedIn Jobs Scraper",
   ai            : "Claude Sonnet API (Anthropic)",
   formatting    : "JavaScript (Node.js)",
   storage       : "Google Sheets API",
