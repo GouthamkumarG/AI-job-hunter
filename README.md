@@ -44,7 +44,7 @@ apply links. All in under 3 minutes.
 
 ## How The Pipeline Works
 
-```
+~~~
 +-----------------------------------------------------------------+
 |                                                                 |
 |   Schedule          Apify                JavaScript             |
@@ -68,7 +68,7 @@ apply links. All in under 3 minutes.
 |                      Delivered                                  |
 |                                                                 |
 +-----------------------------------------------------------------+
-```
+~~~
 
 ---
 
@@ -98,10 +98,10 @@ All 100+ jobs bundled into one Claude API call for efficiency.
 The core of the pipeline. Claude receives every job alongside the full
 candidate resume and analyses each one across four dimensions:
 
-- Skills Match (40%) — counts exactly how many required skills the candidate has
-- Seniority Fit (25%) — checks if the role is genuinely junior or mid level
-- Project Relevance (20%) — checks if projects directly prove ability to do the job
-- Domain Alignment (15%) — AI, ML, Full Stack, or Automation fit
+- Skills Match (40%) counts exactly how many required skills the candidate has
+- Seniority Fit (25%) checks if the role is genuinely junior or mid level
+- Project Relevance (20%) checks if projects directly prove ability to do the job
+- Domain Alignment (15%) AI, ML, Full Stack, or Automation fit
 
 Claude also hard filters and immediately disqualifies any role requiring
 3+ years experience, security clearance, PhD, or Senior/Lead/Principal titles.
@@ -146,7 +146,7 @@ full ranked table with every job analysis and one-click apply buttons.
 
 ## Tech Stack
 
-```javascript
+~~~javascript
 const pipeline = {
   orchestration : "N8N Cloud",
   scraping      : "Apify LinkedIn Jobs Scraper",
@@ -156,18 +156,20 @@ const pipeline = {
   delivery      : "Gmail via N8N",
   hosting       : "N8N Cloud (scheduled)",
 }
-```
+~~~
+
+---
 
 ## Repository Structure
 
-```
+~~~
 ai-job-hunter/
 ├── workflow/
-│   └── AI_Job_Hunter.json      <- N8N workflow export (import directly)
+│   └── AI_Job_Hunter.json      <- N8N workflow export
 ├── assets/
 │   └── pipeline.png            <- N8N pipeline screenshot
 └── README.md
-```
+~~~
 
 ---
 
